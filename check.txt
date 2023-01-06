@@ -1,0 +1,24 @@
+#!/bin/bash
+
+export AZURE_STORAGE_ACCOUNT='your_account'
+export AZURE_STORAGE_ACCESS_KEY='your_access_key'
+
+export container_name='name_of_the_container_to_create'
+export source_folder=~/path_to_local_file_to_upload/*
+
+
+echo "Creating the container..."
+azure storage container create $container_name
+
+for f in $source_folder
+do
+  echo "Uploading $f file..."
+  azure storage blob upload $f $container_name $(basename $f)
+  cat $f
+done
+
+echo "Listing the blobs..."
+azure storage blob list $container_name
+
+echo "Done"
+
