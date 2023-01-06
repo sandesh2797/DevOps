@@ -1,0 +1,53 @@
+#!/bin/bash
+
+INPUT=$1
+YESTERDAY=`date --date="yesterday" +"%Y%m%d"`
+
+
+if [ "$INPUT" == "" ]; then
+  echo "Input Null, date - $YESTERDAY"
+else
+  YESTERDAY=$INPUT
+  echo "Input not Null, date - $YESTERDAY"
+fi
+
+#TMPDIR=$(mktemp --tmpdir=/opt/datadump icici.XXXXXXXXXX -ut)
+DUMPDIR="/data/icici_datadump/final"
+DUMPDIR="/data/icici_datadump/backdated/20220924/final"
+
+
+cd $DUMPDIR
+gzip trips.csv
+gzip policy_car_mapping.csv
+
+STATUS=0
+
+# merge data and compress files
+for i in $(ls -1 *.csv); do
+
+  if [ $STATUS -gt 0 ]; then
+    sed -i '/carId,tripId,timestamp,serverTimestamp,type/d' $i
+  else
+    STATUS=1
+  fi
+
+  cat $i >> iot.csv
+done
+
+gzip iot.csv
+
+# copy files to Azure storage
+
+
+
+s3
+s3
+
+azcopy
+azcopy
+
+if [ $? == 0 ] ; then
+  echo 'success'
+else
+  echo 'failure'
+fi
